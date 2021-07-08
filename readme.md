@@ -102,8 +102,6 @@ $FILE - переменная имени файла, в который будут
 #### Устанавливаем nginx, создаем несколько файлов конфигураций в /etc/nginx, 
 #### копируем конфигурации в /etc/nginx
 
-    yum install epel-release nginx  
-  
     cp /vagrant/nginx1.conf /vagrant/nginx2.conf /vagrant/nginx3.conf /etc/nginx  
 
 #### Создаем сервис для запуска нескольких экземпляров nginx
