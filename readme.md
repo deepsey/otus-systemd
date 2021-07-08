@@ -31,47 +31,47 @@ $FILE - переменная имени файла, в который будут
 
 #### Создаем файл с переменными для нашего юнита mymonitor.service:
 
-cat <<'EOF1' | sudo tee /etc/sysconfig/mymonitor
-LOGFILE=/var/log/messages
-KEYWORD=monitoring
-FILE=/root/monitor_file
-EOF1
+    cat <<'EOF1' | sudo tee /etc/sysconfig/mymonitor  
+    LOGFILE=/var/log/messages  
+    KEYWORD=monitoring  
+    FILE=/root/monitor_file  
+    EOF1
 
 
 #### Создаем файл юнита и таймер для него:
 
-cat <<'EOF1' | sudo tee /etc/systemd/system/mymonitor.service  
-[Unit]  
-Description=Service for monitoring  
+    cat <<'EOF1' | sudo tee /etc/systemd/system/mymonitor.service  
+    [Unit]  
+    Description=Service for monitoring  
   
-[Service]  
-EnvironmentFile=/etc/sysconfig/mymonitor  
-ExecStart=/bin/bash /root/mymonitor.sh  
+    [Service]  
+    EnvironmentFile=/etc/sysconfig/mymonitor  
+    ExecStart=/bin/bash /root/mymonitor.sh  
   
-[Install]  
-WantedBy=multi-user.target  
-EOF1  
+    [Install]  
+    WantedBy=multi-user.target  
+    EOF1  
   
   
-cat <<'EOF1' | sudo tee /etc/systemd/system/mymonitor.timer  
-[Unit]  
-Description=Timer For mymonitor service  
+    cat <<'EOF1' | sudo tee /etc/systemd/system/mymonitor.timer  
+    [Unit]  
+    Description=Timer For mymonitor service  
   
-[Timer]  
-OnUnitActiveSec=30s  
+    [Timer]  
+    OnUnitActiveSec=30s  
   
-[Install]  
-WantedBy=multi-user.target  
-EOF1  
+    [Install]  
+    WantedBy=multi-user.target  
+    EOF1  
   
   
 #### Активируем и запускаем юниты
 
-systemctl daemon-reload  
-systemctl enable mymonitor  
-systemctl enable mymonitor.timer  
-systemctl start mymonitor  
-systemctl start mymonitor.timer  
+    systemctl daemon-reload  
+    systemctl enable mymonitor  
+    systemctl enable mymonitor.timer  
+    systemctl start mymonitor  
+    systemctl start mymonitor.timer  
   
 
 В результате с заданной периодичностью в файл /root/monitor_file будут записываться  
@@ -81,20 +81,18 @@ systemctl start mymonitor.timer
 
 
 
-
-
 ### Задание № 2. Из репозитория epel устанавливаем spawn-fcgi и 
 ### переписываем init-скрипт на unit-файл
 
-yum install -y spawn-fcgi
+    yum install -y spawn-fcgi  
 
-cat <<'EOF1' | sudo tee /etc/systemd/system/spawn-fcgi.service
-[Unit]
-Description=spawn-fcgi service
+    cat <<'EOF1' | sudo tee /etc/systemd/system/spawn-fcgi.service
+    [Unit]  
+    Description=spawn-fcgi service  
 
-[Service]
-ExecStart=/usr/bin/spawn-fcgi
-EOF1
+    [Service]  
+    ExecStart=/usr/bin/spawn-fcgi  
+    EOF1  
 
 
 
@@ -104,28 +102,28 @@ EOF1
 #### Устанавливаем nginx, создаем несколько файлов конфигураций в /etc/nginx, 
 #### копируем конфигурации в /etc/nginx
 
-yum install epel-release nginx  
+    yum install epel-release nginx  
   
-cp /vagrant/nginx1.conf /vagrant/nginx2.conf /vagrant/nginx3.conf /etc/nginx  
+    cp /vagrant/nginx1.conf /vagrant/nginx2.conf /vagrant/nginx3.conf /etc/nginx  
 
 #### Создаем сервис для запуска нескольких экземпляров nginx
 
-cat <<'EOF1' | sudo tee /etc/systemd/system/nginx@.service  
-[Unit]  
-Description=The nginx HTTP and reverse proxy server  
-After=network-online.target remote-fs.target nss-lookup.target  
-Wants=network-online.target  
+    cat <<'EOF1' | sudo tee /etc/systemd/system/nginx@.service  
+    [Unit]  
+    Description=The nginx HTTP and reverse proxy server  
+    After=network-online.target remote-fs.target nss-lookup.target  
+    Wants=network-online.target  
   
-[Service]  
-Type=forking  
-PIDFile=/run/nginx.pid  
-#Nginx will fail to start if /run/nginx.pid already exists but has the wrong  
-#SELinux context. This might happen when running `nginx -t` from the cmdline.  
-#https://bugzilla.redhat.com/show_bug.cgi?id=1268621  
-ExecStartPre=/usr/bin/rm -f /run/nginx.pid  
-ExecStartPre=/usr/sbin/nginx -t  
-ExecStart=/usr/sbin/nginx -c /etc/nginx/%i.conf  
-ExecReload=/usr/sbin/nginx -s reload  
+    [Service]  
+    Type=forking  
+    PIDFile=/run/nginx.pid  
+    # Nginx will fail to start if /run/nginx.pid already exists but has the wrong  
+    # SELinux context. This might happen when running `nginx -t` from the cmdline.  
+    # https://bugzilla.redhat.com/show_bug.cgi?id=1268621  
+    ExecStartPre=/usr/bin/rm -f /run/nginx.pid  
+    ExecStartPre=/usr/sbin/nginx -t  
+    ExecStart=/usr/sbin/nginx -c /etc/nginx/%i.conf  
+    ExecReload=/usr/sbin/nginx -s reload  
 KillSignal=SIGQUIT  
 TimeoutStopSec=5  
 KillMode=process  
