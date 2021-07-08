@@ -9,7 +9,7 @@
 
 #### Устанавливаем репозитрий epel
 
-yum install -y epel-release  
+    yum install -y epel-release  
 
 
 
@@ -17,11 +17,11 @@ yum install -y epel-release
 
 #### Копируем файл со скриптом мониторинга лог-файла
 
-cp /vagrant/mymonitor.sh /root
+    cp /vagrant/mymonitor.sh /root
 
 #### В этом файле:
 
-cat $LOGFILE | grep $KEYWORD > $FILE
+    cat $LOGFILE | grep $KEYWORD > $FILE
 
 $LOGFILE - переменная имени лога  
 $KEYWORD - переменная для ключевого слова  
@@ -124,29 +124,29 @@ $FILE - переменная имени файла, в который будут
     ExecStartPre=/usr/sbin/nginx -t  
     ExecStart=/usr/sbin/nginx -c /etc/nginx/%i.conf  
     ExecReload=/usr/sbin/nginx -s reload  
-KillSignal=SIGQUIT  
-TimeoutStopSec=5  
-KillMode=process  
-PrivateTmp=true  
+    KillSignal=SIGQUIT  
+    TimeoutStopSec=5  
+    KillMode=process  
+    PrivateTmp=true  
   
-[Install]  
-WantedBy=multi-user.target  
-EOF1  
+    [Install]  
+    WantedBy=multi-user.target  
+    EOF1  
   
 #### Отключаем Selinux
   
-setenforce 0  
+    setenforce 0  
   
   
 #### Запускаем сервисы
 
-systemctl start nginx@nginx1.service  
-systemctl start nginx@nginx2.service  
-systemctl start nginx@nginx3.service  
+    systemctl start nginx@nginx1.service  
+    systemctl start nginx@nginx2.service  
+    systemctl start nginx@nginx3.service  
 
 
 #### Заходим по адресам nginx, убеждаемся, что все работает
 
-curl http://localhost:82  
-curl http://localhost:83  
-curl http://localhost:84  
+    curl http://localhost:82  
+    curl http://localhost:83  
+    curl http://localhost:84  
